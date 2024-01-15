@@ -1,0 +1,9 @@
+.table-nowrap tbody > tr > td, 
+.table-nowrap thead > tr > th { 
+    white-space: nowrap;
+}
+
+.dataTables_filter,
+.dataTables_length {
+    display: none;
+}

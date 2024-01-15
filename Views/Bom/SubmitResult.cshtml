@@ -1,0 +1,70 @@
+﻿@{
+    ViewData["Title"] = "Submit Result";
+    Layout = "CleanLayout";
+}
+
+<h1 class="text-center">@ViewData["Approve"] BOM VERSION @ViewData["BomId"]</h1>
+
+<div class="text-center"
+     style="margin: 30px auto;
+    padding: 20px;
+    border: 1px solid #cccccc;
+    font-size: 1.3em;
+    background: white;
+    font-weight: bold;
+    max-width: 700px;">
+
+    @if (ViewData["isApprove"].ToString() == "1")
+    {
+        <form id="submitResult" asp-controller="BomApi" asp-action="ApproveBom" method="post">
+            <div class="form-group">
+                <label>หมายเหตุเพิ่มเติม</label>
+                <textarea rows="10" name="remark" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+                @Html.AntiForgeryToken()
+
+                <input type="hidden" name="bom" value="@ViewData["BomRedId"]" />
+                <input type="hidden" name="email" value="@ViewData["EmailRecId"]" />
+                <input type="hidden" name="trans" value="@ViewData["ApproveTransId"]" />
+                <input type="hidden" name="id" value="@ViewData["BomId"]" />
+                <input type="hidden" name="company" value="@ViewData["Company"]" />
+                <input type="hidden" name="nonce" value="@ViewData["Nonce"]" />
+
+                <button type="submit" id="btnSubmit" class="btn btn-success" onclick="return confirm('ยืนยันที่จะบันทึกข้อมูล?')">บันทึกข้อมูล</button>
+            </div>
+        </form>
+    }
+    else
+    {
+        <form id="submitResult" asp-controller="BomApi" asp-action="RejectBom" method="post">
+            <div class="form-group">
+                <label>หมายเหตุเพิ่มเติม</label>
+                <textarea rows="10" name="remark" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+                @Html.AntiForgeryToken()
+
+                <input type="hidden" name="bom" value="@ViewData["BomRedId"]" />
+                <input type="hidden" name="email" value="@ViewData["EmailRecId"]" />
+                <input type="hidden" name="trans" value="@ViewData["ApproveTransId"]" />
+                <input type="hidden" name="id" value="@ViewData["BomId"]" />
+                <input type="hidden" name="company" value="@ViewData["Company"]" />
+                <input type="hidden" name="nonce" value="@ViewData["Nonce"]" />
+
+                <button type="submit" id="btnSubmit" class="btn btn-success" onclick="return confirm('ยืนยันที่จะบันทึกข้อมูล?')">บันทึกข้อมูล</button>
+            </div>
+        </form>
+    }
+
+
+
+</div>
+
+@section Scripts {
+    <script>
+        $("#submitResult").on("submit", function (e) {
+            $("#btnSubmit").prop("disabled", true).text("กำลังประมวลผล...");
+        });
+    </script>
+}

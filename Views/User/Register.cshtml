@@ -1,0 +1,128 @@
+﻿@{
+    ViewData["Title"] = "Register";
+    Layout = "CleanLayout";
+}
+
+<div class="panel" style="max-width: 800px; margin: auto;">
+    <div class="panel-body">
+
+        <h1 class="text-center" style="margin: 40px 0px;">ลงทะเบียน</h1>
+
+        <form action="/userapi/register" method="post">
+
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label>ชื่อผู้ใช้</label>
+                    <input type="text" name="username" autocomplete="off" class="form-control" required autofocus />
+                </div>
+                <div class="form-group col-md-4">
+                    <label>รหัสผ่าน</label>
+                    <input type="password" name="password" autocomplete="off" class="form-control" required />
+                </div>
+                <div class="form-group col-md-4">
+                    <label>รหัสพนักงาน</label>
+                    <div class="input-group">
+                        <input type="text" name="empid" class="form-control">
+                        <span class="input-group-btn">
+                            <button class="btn btn-primary" id="searchEmp" type="button">ค้นหา</button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group text-center">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-success">ยืนยัน</button>
+                    <a href="/user/login" class="btn btn-primary">กลับไปหน้า Login</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal" id="modalSelectEmp" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">เลือกจากรายชื่อพนักงาน</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table id="gridSelectEmp" class="compact stripe table-dt table-nowrap">
+                    <thead>
+                        <tr>
+                            <th>Employee ID</th>
+                            <th>Name</th>
+                            <th>Lastname</th>
+                            <th>Company</th>
+                        </tr>
+                        <tr>
+                            <th>Employee ID</th>
+                            <th>Name</th>
+                            <th>Lastname</th>
+                            <th>Company</th>
+                        </tr>
+                    </thead>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        jQuery(document).ready(function ($) {
+
+            $("#searchEmp").on("click", function () {
+                $("#modalSelectEmp").modal({ backdrop: "static" });
+
+                $("#gridSelectEmp").DataTable({
+                    dom: 'Bfrtip',
+                    buttons: [
+                        {
+                            text: 'บันทึก',
+                            action: function (e, dt, node, config) {
+                                var emp = getRowsSelected("#gridSelectEmp");
+
+                                console.log(emp);
+
+                                if (typeof emp !== "undefined") {
+                                    console.log(emp[0].CODEMPID);
+                                    $("input[name=empid]").val(emp[0].CODEMPID);
+                                    $("#modalSelectEmp").modal("hide");
+                                }
+                            }
+                        }
+                    ],
+                    processing: false,
+                    serverSide: false,
+                    deferRender: true,
+                    searching: true,
+                    order: [],
+                    orderCellsTop: true,
+                    destroy: true,
+                    select: {
+                        style: 'single'
+                    },
+                    ajax: {
+                        url: "/employee/getemployee",
+                        method: "post",
+                    },
+                    initComplete: function(settings, json) {
+                        addFilter(settings);
+                    },
+                    columns: [
+                        { data: "CODEMPID", name: "string" },
+                        { data: "EMPNAME", name: "string" },
+                        { data: "EMPLASTNAME", name: "string" },
+                        { data: "COMPANYNAME", name: "string" }
+                    ],
+                });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,94 @@
+﻿@{
+    ViewData["Title"] = "Approve List";
+}
+
+@model ApproveListViewModel
+@using Deestone.Services
+
+@{
+    BomService bomService = new BomService();
+}
+
+<div class="box" style="max-width: 800px; margin: auto;">
+    <div class="box-body">
+        <form id="formApprove" asp-controller="BomApi" asp-action="SubmitApprove" method="post">
+            <table>
+                @foreach (var item in Model.BOMLISTAPPROVE)
+                {
+                    <tr>
+                        <td style="padding: 5px;" valign="middle">@item.BOMID</td>
+                        <td style="padding: 5px;" valign="middle">
+                            <a href="/bom/bomdetail?bomid=@item.BOMID" target="_blank" style="margin: 0px 10px;">รายละเอียด</a>
+                        </td>
+                        <td style="padding: 5px;" valign="middle">
+                            อนุมัติ/ไม่อนุมัติ <br />
+                            @{ var _n = "approve_" + item.BOMID + "_" + item.BOM_RECID; }
+                            <select style="width: 150px;" name="@_n">
+                                <option value='0'>-- เลือก --</option>
+                                <option value='1'>อนุมัติ</option>
+                                <option value='2'>ไม่อนุมัติ</option>
+                            </select>
+                        </td>
+                        <td style="padding: 5px;" valign="middle">เหตุผล <br /> <textarea cols="50" rows="5" name="reason_@item.BOMID"></textarea></td>
+                    </tr>
+
+                    @if (Model.BOM_RECID.Count > 0)
+                    {
+                        @foreach(var bomRecId in Model.BOM_RECID)
+                        {
+
+                            @if (bomRecId.BOM_RECID == item.BOM_RECID)
+                            {
+                                <tr>
+                                    <td colspan="4" style="padding: 10px 0px;">
+                                        <p style="font-weight: bold;">หมายเหตุเพิ่มเติม</p>
+                                    </td>
+                                </tr>
+                                @foreach (var remark in bomService.GetBomRemarkByBomId(bomRecId.BOM_RECID))
+                                {
+                                    <tr>
+                                        <td colspan="4" bgcolor="#eeeeee" style="padding: 10px;">
+                                            <p>
+                                                @if (remark.APPROVE == 1)
+                                                {
+                                                    <span>(อนุมัติ)</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>(ไม่อนุมัติ)</span>
+                                                }
+
+                                                @remark.EMPNAME : @remark.REMARK
+                                            </p>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        }
+                    }
+                }
+            </table>
+
+            <div class="form-group" style="margin: 20px 0px;">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="email" value="@Model.EMAIL" />
+                <input type="hidden" name="nonce" value="@Model.NONCE" />
+                <button class="btn btn-success" type="submit">บันทึกข้อมูล</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        jQuery(document).ready(function($) {
+            $("#formApprove").submit(function (e) {
+                if (confirm("คุณยืนยันที่จะดำเนินการต่อ?")) {
+                    $("button[type=submit]").prop("disabled", true).text("กำลังประมวลผล...");
+                } else {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+}

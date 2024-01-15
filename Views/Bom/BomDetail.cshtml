@@ -1,0 +1,244 @@
+﻿@{
+    ViewData["Title"] = "BOM detail";
+    int i = 0;
+}
+
+@model BomDetailViewModel
+
+@using Deestone.Services
+
+@{
+    BomService bomService = new BomService();
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <h3 style="margin-left: 10px;">รายละเอียดการแก้ไข BOM</h3>
+    </div>
+</div>
+
+@if(Model.BOM_DETAIL.Count > 0)
+{
+    <div class="row">
+    @foreach (var item in Model.BOM_DETAIL)
+    {
+        i+=1;
+        @if(i == 4)
+        {
+            i = 1;
+            @:</div>
+            @:<div class="row">
+        }
+        <div class="col-md-4">
+            <table style="margin: 10px;" cellpadding="3" cellspacing="0" border="1">
+                <tr style="background: #eeeeee; color: #000000; text-align: center;">
+                    <td colspan="3">
+                        @item.BOMID
+                        <div>
+                            @item.BOMNAME
+                        </div>
+                    </td>
+                </tr>
+                <tr style="background: #333333; color: #ffffff;">
+                    <td class="text-center">รายละเอียด</td>
+                    @if (item.AX_STATUS == 1) {
+                        <td class="text-center">ข้อมูลเดิม</td>
+                    }
+                    <td class="text-center">ข้อมูลปัจจุบัน</td>
+                </tr>
+                <tr>
+
+                    @if (item.OLD_ITEMID == item.ITEMID)
+                    {
+                        
+                        <td style='width: 30%;'>ITEM</td>
+                        @if (item.AX_STATUS == 1)
+                        {
+                        <td style='text-align: center;'>@item.OLD_ITEMID <br/> @item.OLD_ITEMNAME </td>
+                        }
+                        <td style='text-align: center;'>@item.ITEMID <br/> @item.ITEMNAME</td>
+                    }
+                    else
+                    {
+                        
+                        <td style='width: 30%; border: 2px solid red;'>ITEM</td>
+                        @if (item.AX_STATUS == 1)
+                        {
+                        <td style='text-align: center; border: 2px solid red;'>@item.OLD_ITEMID <br/> @item.OLD_ITEMNAME</td>
+                        }
+                        <td style='text-align: center; border: 2px solid red;'>@item.ITEMID <br/> @item.ITEMNAME</td>
+                        
+                    }
+                </tr>
+                <tr>
+                    @if (item.OLD_BOMQTY == item.BOMQTY)
+                    {
+                        
+                        <td style='width: 30%;'>BOM QTY</td>
+                        @if (item.AX_STATUS == 1)
+                        {
+                        <td style='text-align: center;'>@item.OLD_BOMQTY</td>
+                        }
+                        <td style='text-align: center;'>@item.BOMQTY</td>
+                        
+                    }
+                    else
+                    {
+                        
+                        <td style='width: 30%;border: 2px solid red;'>BOM QTY</td>
+                        @if (item.AX_STATUS == 1)
+                        {
+                        <td style='text-align: center; border: 2px solid red;'>@item.OLD_BOMQTY</td>
+                        }
+                        <td style='text-align: center; border: 2px solid red;'>@item.BOMQTY</td>
+                        
+                    }
+                </tr>
+                <tr>
+
+                    @if (item.OLD_UNITID == item.UNITID)
+                    {
+                        <td style='width: 30%;'>UNIT</td>
+                        @if (item.AX_STATUS == 1)
+                        {
+                        <td style='text-align: center;'>@item.OLD_UNITID</td>
+                        }
+                        <td style='text-align: center;'>@item.UNITID</td>
+                    }
+                    else
+                    {
+                        <td style='width: 30%; border: 2px solid red;'>UNIT</td>
+                        @if (item.AX_STATUS == 1)
+                        {
+                        <td style='text-align: center; border: 2px solid red;'>@item.OLD_UNITID</td>
+                        }
+                        <td style='text-align: center; border: 2px solid red;'>@item.UNITID</td>
+                    }
+                    </tr>
+                <tr>
+
+                    @if (item.BOMQTYSERIE == item.OLD_BOMQTYSERIE)
+                    {
+                        
+                        <td style='width: 30%;'>BOM QTY SERIES</td>
+                        @if (item.AX_STATUS == 1)
+                        {
+                        <td style='text-align: center;'>@item.OLD_BOMQTYSERIE</td>
+                        }
+                        <td style='text-align: center;'>@item.BOMQTYSERIE</td>
+                        
+                    }
+                    else
+                    {
+                        <td style='width: 30%;border: 2px solid red;'>BOM QTY SERIES</td>
+                        @if (item.AX_STATUS == 1)
+                        {
+                        <td style='text-align: center; border: 2px solid red;'>@item.OLD_BOMQTYSERIE</td>
+                        }
+                        <td style='text-align: center; border: 2px solid red;'>@item.BOMQTYSERIE</td>
+                    }
+                </tr>
+            </table>
+        </div>
+    }
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <h3 style="margin-left: 10px;">Remark from Ax</h3>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <table style="margin: 10px;" cellpadding="5" cellspacing="0" border="1">
+            <tr style="background: #333333; color: #ffffff;">
+                <td style="text-align: center; padding: 3px;">ข้อความ</td>
+            </tr>
+            <tr>
+                <td style="padding: 3px;">
+                    @Model.REMARK
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+@if (Model.BOM_REMARK.Count > 0)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <h3 style="margin-left: 10px;">หมายเหตุเพิ่มเติม</h3>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <table style="margin: 10px;" cellpadding="5" cellspacing="0" border="1">
+                <tr style="background: #333333; color: #ffffff;">
+                    <td style="text-align: center; padding: 3px;">ชื่อ</td>
+                    <td style="text-align: center; padding: 3px;">สถานะ</td>
+                    <td style="text-align: center; padding: 3px;">ข้อความ</td>
+                </tr>
+                @foreach (var item in Model.BOM_REMARK)
+                {
+                    <tr>
+                        <td style="padding: 3px;">
+                            @item.EMPNAME
+                        </td>
+                        <td style="padding: 3px;">
+                            @if (item.APPROVE == 1)
+                            {
+                                <span style="color: green; font-weight: bold;">อนุมัติ</span>
+                            }
+                            else
+                            {
+                                <span style="color: red; font-weight: bold;">ไม่อนุมัติ</span>
+                            }
+                        </td>
+                        <td style="padding: 3px;">
+                            @if (item.REMARK == null || item.REMARK == "")
+                            {
+                                <span>-</span>
+                            }
+                            else
+                            {
+                                <span>@item.REMARK</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <h3 style="margin-left: 10px;">Item ที่ได้รับผลกระทบ</h3>
+    </div>
+</div>
+
+<div class="row">
+
+    <div class="col-md-12">
+
+        <table style="margin: 10px;" cellpadding="5" cellspacing="0" border="1">
+            <tr style="background: #333333; color: #ffffff;">
+                <td style="text-align: center; ">ITEM ID</td>
+                <td style="text-align: center; ">ITEM NAME</td>
+            </tr>
+            @if(Model.BOM_DETAIL.Count > 0){
+                @foreach (var item in bomService.GetItemRelateBomVersion(Model.BOM_DETAIL[0].BOMID))
+                {
+                    <tr>
+                        <td style="padding: 3px;">@item.ITEMID</td>
+                        <td style="padding: 3px;">@item.ITEM_NAME</td>
+                    </tr>
+                }
+            }
+            
+        </table>
+    </div>
+</div>

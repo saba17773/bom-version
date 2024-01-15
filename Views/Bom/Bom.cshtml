@@ -1,0 +1,305 @@
+﻿@{ ViewData["Title"] = "Bom"; Layout = "MainLayout"; }
+
+<table id="grid" class="compact stripe table-nowrap" style="width: 100%;">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>BOMID</th>
+      <th>BOMNAME</th>
+      <th>COMPANY</th>
+      <th>STATUS</th>
+      <th>CREATE DATE</th>
+      <th>UPDATE DATE</th>
+      <th>COMPLETE DATE</th>
+      <th>AX STATUS</th>
+    </tr>
+    <tr>
+      <th>#</th>
+      <th>BOMID</th>
+      <th>BOMNAME</th>
+      <th>COMPANY</th>
+      <th>STATUS</th>
+      <th>CREATE DATE</th>
+      <th>UPDATE DATE</th>
+      <th>COMPLETE DATE</th>
+      <th>AX STATUS</th>
+    </tr>
+  </thead>
+</table>
+
+<div class="modal" id="modalBomApprove" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">รายละเอียด</h4>
+      </div>
+      <div class="modal-body">
+        <div style="overflow-x: scroll;">
+          <table
+            id="gridBomApproveTrans"
+            class="compact stripe table-nowrap"
+            style="width: 100%;"
+          >
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>BOMID</th>
+                <th>EMAIL</th>
+                <th>EMAIL_ORDER</th>
+                <th>CREATE DATE</th>
+                <th>SEND DATE</th>
+                <th>SEND NOTIFY DATE</th>
+                <th>APPROVE DATE</th>
+                <th>REJECT DATE</th>
+              </tr>
+              <tr>
+                <th>#</th>
+                <th>BOMID</th>
+                <th>EMAIL</th>
+                <th>EMAIL_ORDER</th>
+                <th>CREATE DATE</th>
+                <th>SEND DATE</th>
+                <th>SEND NOTIFY DATE</th>
+                <th>APPROVE DATE</th>
+                <th>REJECT DATE</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+@section Scripts {
+<script>
+  $(document).ready(function() {
+    loadGrid({
+      el: "#grid",
+      dom: "Bfrtip",
+      buttons: [
+        {
+          text: "รายละเอียด",
+          action: function() {
+            var rowdata = getRowsSelected("#grid");
+            if (rowdata.length > 0) {
+              $("#modalBomApprove").modal({ backdrop: "static" });
+
+              loadGrid({
+                el: "#gridBomApproveTrans",
+                dom: "Bfrtip",
+                buttons: [],
+                processing: false,
+                serverSide: false,
+                deferRender: true,
+                searching: true,
+                order: [],
+                orderCellsTop: true,
+                destroy: true,
+                select: {
+                  style: "single",
+                },
+                ajax: {
+                  url: "/bom/GetBomApproveTrans",
+                  data: {
+                    id: rowdata[0].ID,
+                  },
+                  method: "post",
+                },
+                columns: [
+                  { data: "ID" },
+                  { data: "BOMID" },
+                  { data: "EMAIL" },
+                  { data: "EMAIL_ORDER" },
+                  { data: "DIMENSION"},
+                  { data: "CREATE_DATE" },
+                  { data: "SEND_DATE" },
+                  { data: "SEND_NOTIFY_DATE" },
+                  { data: "APPROVE_DATE" },
+                  { data: "REJECT_DATE" },
+                ],
+                columnDefs: [
+                  {
+                    render: function(data, type, row) {
+                      var c = dayjs(data).format("YYYY-MM-DD HH:mm:ss");
+
+                      if (c === "1901-01-01 00:00:00") {
+                        c = "";
+                      }
+
+                      return c;
+                    },
+                    targets: 4,
+                  },
+                  {
+                    render: function(data, type, row) {
+                      var c = dayjs(data).format("YYYY-MM-DD HH:mm:ss");
+
+                      if (c === "1901-01-01 00:00:00") {
+                        c = "";
+                      }
+
+                      return c;
+                    },
+                    targets: 5,
+                  },
+                  {
+                    render: function(data, type, row) {
+                      var c = dayjs(data).format("YYYY-MM-DD HH:mm:ss");
+
+                      if (c === "1901-01-01 00:00:00") {
+                        c = "";
+                      }
+
+                      return c;
+                    },
+                    targets: 6,
+                  },
+                  {
+                    render: function(data, type, row) {
+                      var c = dayjs(data).format("YYYY-MM-DD HH:mm:ss");
+
+                      if (c === "1901-01-01 00:00:00") {
+                        c = "";
+                      }
+
+                      return c;
+                    },
+                    targets: 7,
+                  },
+                  {
+                    render: function(data, type, row) {
+                      var c = dayjs(data).format("YYYY-MM-DD HH:mm:ss");
+
+                      if (c === "1901-01-01 00:00:00") {
+                        c = "";
+                      }
+
+                      return c;
+                    },
+                    targets: 8,
+                  },
+                ],
+              });
+            } else {
+              alert("กรุณาเลือกรายการ");
+            }
+          },
+        },
+      ],
+      processing: false,
+      serverSide: false,
+      deferRender: true,
+      searching: true,
+      order: [],
+      orderCellsTop: true,
+      destroy: true,
+      select: {
+        style: "single",
+      },
+      ajax: {
+        url: "/bom/getbomall",
+        method: "post",
+      },
+      columns: [
+        { data: "ID" },
+        { data: "BOMID" },
+        { data: "BOMNAME" },
+        { data: "COMPANY_REF" },
+        { data: "STATUS" },
+        { data: "CREATE_DATE" },
+        { data: "UPDATE_DATE" },
+        { data: "COMPLETE_DATE" },
+        { data: "AX_STATUS" },
+      ],
+      columnDefs: [
+        {
+          render: function(data, type, row) {
+            var c = dayjs(data).format("YYYY-MM-DD HH:mm:ss");
+
+            if (c === "1901-01-01 00:00:00") {
+              c = "";
+            }
+
+            return (
+              '<div class="--create-date" data-pk="' +
+              row.ID +
+              '">' +
+              c +
+              "</div>"
+            );
+          },
+          targets: 5,
+        },
+        {
+          render: function(data, type, row) {
+            var c = dayjs(data).format("YYYY-MM-DD HH:mm:ss");
+
+            if (c === "1901-01-01 00:00:00") {
+              c = "";
+            }
+
+            return (
+              '<div class="--update-date" data-pk="' +
+              row.ID +
+              '">' +
+              c +
+              "</div>"
+            );
+          },
+          targets: 6,
+        },
+        {
+          render: function(data, type, row) {
+            var c = dayjs(data).format("YYYY-MM-DD HH:mm:ss");
+
+            if (c === "1901-01-01 00:00:00") {
+              c = "";
+            }
+
+            return (
+              '<div class="--complete-date" data-pk="' +
+              row.ID +
+              '">' +
+              c +
+              "</div>"
+            );
+          },
+          targets: 7,
+        },
+        {
+          render: function(data, type, row) {
+            var c = "";
+            if (+data === 1) {
+              c = "Send to web.";
+            } else if (+data === 4) {
+              c = "Send to cancel";
+            } else {
+              c = data;
+            }
+            return (
+              '<div class="--ax-status" data-pk="' +
+              row.ID +
+              '">' +
+              c +
+              "</div>"
+            );
+          },
+          targets: 8,
+        },
+      ],
+    });
+  });
+</script>
+}

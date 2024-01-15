@@ -1,0 +1,22 @@
+﻿@using Microsoft.AspNetCore.Http
+@using Deestone.Services
+
+@{
+    UserService userService = new UserService();
+}
+
+<nav class="navbar navbar-default navbar-static-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/">BOM VERSION</a>
+    </div>
+    <ul id="d-nav-menu" class="nav navbar-nav navbar-right">
+        @if (userService.IsAdmin(Context.Request).result == true) {
+        <li><a href="/bom">Bom</a></li>
+        <li><a href="/user">User</a></li>
+        <li><a href="/email">Email</a></li>
+        <li><a href="/user/logout">Logout</a></li>
+        }
+    </ul>
+  </div>
+</nav>

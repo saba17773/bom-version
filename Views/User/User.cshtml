@@ -1,0 +1,123 @@
+﻿@{ 
+    ViewData["Title"] = "User";
+}
+
+<div>
+    <table id="grid" class="compact stripe table-nowrap"> 
+        <thead>
+            <th>#</th>
+            <th>ชื่อผู้ใช้</th>
+            <th>รหัสพนักงาน</th>
+            <th>ชื่อ</th>
+            <th>นามสกุล</th>
+            <th>กลุ่ม</th>
+            <th>สถานะ</th>
+        </thead>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        jQuery(document).ready(function () {
+
+            var grid_callback = function (settings, json) {
+
+                var _activeSelect = [
+                    {
+                        id: 1,
+                        name: "เปิดใช้งาน"
+                    },
+                    {
+                        id: 2,
+                        name: "ไม่ได้เปิดใช้งาน"
+                    }
+                ];
+
+                $('#grid .--active').editable({
+                    type: 'select',
+                    name: 'ACTIVE',
+                    mode: 'inline',
+                    url: '/userapi/updateusermaster',
+                    source: pack_dd(_activeSelect, "id", "name", true, 1),
+                    success: function (response, newValue) {
+                        reloadGrid("#grid");
+                    }
+                });
+
+                call_ajax("post", "/roleapi/getrolemaster").done(function (data) {
+                    $('#grid .--role').editable({
+                        type: 'select',
+                        name: 'ROLE',
+                        mode: 'inline',
+                        url: '/userapi/updateusermaster',
+                        source: pack_dd(data, "ID", "NAME"),
+                        success: function (response, newValue) {
+                            reloadGrid("#grid");
+                        }
+                    });
+                });
+            };
+
+            $("#grid").DataTable({
+                dom: "Bfrtip",
+                processing: false,
+                serverSide: false,
+                deferRender: true,
+                searching: true,
+                order: [],
+                orderCellsTop: true,
+                destroy: true,
+                buttons: [
+                    {
+                        text: 'เพิ่มข้อมูล',
+                        action: function ( e, dt, node, config ) {
+                            window.open("/user/register", "_blank");
+                        }
+                    }
+                ],
+                select: {
+                    style: 'single' // single, multi
+                },
+                fnDrawCallback: grid_callback,
+                ajax: {
+                    url: "/userapi/getusermaster",
+                    method: "post",
+                },
+                columns: [
+                    { data: "ID" },
+                    { data: "USERNAME" },
+                    { data: "EMPID" },
+                    { data: "EMPNAME" },
+                    { data: "EMPLASTNAME" },
+                    { data: "ROLE_NAME" },
+                    { data: "ACTIVE" }
+                ],
+                columnDefs: [
+                    {
+                        render: function (data, type, row) {
+                            return '<div class="--role" data-pk="' + row.ID + '">' + data + '</div>';
+                        }, targets: 5
+                    },
+                    {
+                        render: function (data, type, row) {
+                            return '<div class="--empid" data-pk="' + row.ID + '">' + data + '</div>';
+                        }, targets: 2
+                    },
+                    {
+                        render: function (data, type, row) {
+                            c = data;
+
+                            if (data === 1) {
+                                c = "เปิดใช้งาน";
+                            } else {
+                                c = "ไม้ได้เปิดใช้งาน";
+                            }
+
+                            return '<div class="--active" data-pk="' + row.ID + '">' + c + '</div>';
+                        }, targets: 6
+                    }
+                ]
+            });
+        });
+    </script>
+}

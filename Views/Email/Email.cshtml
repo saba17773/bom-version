@@ -1,0 +1,474 @@
+﻿@{ ViewData["Title"] = "Email"; Layout = "MainLayout"; }
+
+<div class="modal" id="modalCreate" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">เพิ่ม Email ใหม่</h4>
+      </div>
+      <div class="modal-body">
+        <form id="formCreate">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  class="form-control"
+                  value=""
+                  required
+                  autocomplete="off"
+                />
+              </div>
+              <div class="form-group">
+                <label>บริษัท</label>
+                <select name="company" class="form-control">
+                  <option value="DSL">DSL</option>
+                  <option value="DRB">DRB</option>
+                  <option value="DSI">DSI</option>
+                  <option value="DSR">DSR</option>
+                  <option value="STR">STR</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>ลำดับการส่ง Email</label>
+                <input
+                  type="number"
+                  name="order"
+                  class="form-control"
+                  value="0"
+                  required
+                  readonly
+                />
+              </div>
+              <div class="form-group">
+                <label>ระดับการอนุมัติ</label>
+                <select name="emailGroup" class="form-control"></select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>สามารถอนุมัติได้</label>
+                <select name="canApprove" class="form-control">
+                  <option value="1">ใช่</option>
+                  <option value="0">ไม่ใช่</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>แจ้งเตือนไปยัง</label>
+                <select name="notifyTo" class="form-control"></select>
+              </div>
+              <div class="form-group">
+                <label>อนุมัติลำดับสุดท้าย</label>
+                <select name="finalApprove" class="form-control">
+                  <option value="1">ใช่</option>
+                  <option value="0">ไม่ใช่</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>กลุ่มไอเทม</label>
+                <select name="itemGroup" class="form-control"></select>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <button class="btn btn-success" type="submit">Submit</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+<div class="box">
+  <div class="box-body">
+    <div style="overflow-x: auto;">
+      <table id="grid" class="compact stripe table-nowrap" style="width: 100%;">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>อีเมล</th>
+            <th>บริษัท</th>
+            <th>ลำดับ</th>
+            <th>ระดับการอนุมัติ</th>
+            <th>สามารถอนุมัติได้</th>
+            <th>แจ้งเตือน</th>
+            <th>อนุมัติลำดับสุดท้าย</th>
+            <th>กลุ่มไอเทม</th>
+            <th>Dimension</th>
+            <th>สถานะ</th>
+          </tr>
+          <tr>
+            <th>#</th>
+            <th>อีเมล</th>
+            <th>บริษัท</th>
+            <th>ลำดับ</th>
+            <th>ระดับการอนุมัติ</th>
+            <th>สามารถอนุมัติได้</th>
+            <th>แจ้งเตือน</th>
+            <th>อนุมัติลำดับสุดท้าย</th>
+            <th>กลุ่มไอเทม</th>
+            <th>Dimension</th>
+            <th>สถานะ</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+<script>
+    $(document).ready(function () {
+        var grid_callback = function (settings, json) {
+
+            $("#grid .--email").editable({
+                type: "text",
+                name: "EMAIL",
+                mode: "inline",
+                url: "/bomapi/updateemail",
+                success: function (response, newValue) { },
+            });
+
+            var _companySource = [
+                {
+                    id: "DSL",
+                    name: "DSL",
+                },
+                {
+                    id: "DRB",
+                    name: "DRB",
+                },
+                {
+                    id: "DSI",
+                    name: "DSI",
+                },
+                {
+                    id: "DSR",
+                    name: "DSR",
+                },
+                {
+                    id: "STR",
+                    name: "STR",
+                },
+            ];
+
+            $("#grid .--company").editable({
+                type: "select",
+                name: "COMPANY",
+                mode: "inline",
+                url: "/bomapi/updateemail",
+                source: pack_dd(_companySource, "id", "name"),
+                success: function (response, newValue) {
+                    reloadGrid("#grid", false);
+                },
+            });
+
+            $("#grid .--dimension").editable({
+                type: "text",
+                name: "DIMENSION",
+                mode: "inline",
+                url: "/bomapi/updateemail",
+                success: function (response, newValue) {
+                    reloadGrid("#grid", false);
+                },
+            });
+
+            var _approveLevel = [
+                {
+                    id: 1,
+                    name: "NORMAL_APPROVE",
+                },
+                {
+                    id: 2,
+                    name: "FINAL_APPROVE",
+                },
+                {
+                    id: 3,
+                    name: "NOTIFY",
+                },
+            ];
+
+            $("#grid .--approve-level").editable({
+                type: "select",
+                name: "EMAIL_GROUP",
+                mode: "inline",
+                url: "/bomapi/updateemail",
+                source: pack_dd(_approveLevel, "id", "name"),
+                success: function (response, newValue) {
+                    reloadGrid("#grid", false);
+                }
+            });
+
+            $("#grid .--order").editable({
+                type: "number",
+                name: "EMAIL_ORDER",
+                mode: "inline",
+                url: "/bomapi/updateemail",
+                success: function (response, newValue) {
+                    reloadGrid("#grid", false);
+                },
+            });
+
+            var yn = [{ id: 1, name: "ใช่" }, { id: 0, name: "ไม่ใช่"}];
+
+            $("#grid .--can-approve").editable({
+                type: "select",
+                name: "CAN_APPROVE",
+                mode: "inline",
+                url: "/bomapi/updateemail",
+                source: pack_dd(yn, "id", "name"),
+                success: function (response, newValue) {
+                    reloadGrid("#grid", false);
+                },
+            });
+
+            $("#grid .--is-final").editable({
+                type: "select",
+                name: "IS_FINAL",
+                mode: "inline",
+                url: "/bomapi/updateemail",
+                source: pack_dd(yn, "id", "name"),
+                success: function (response, newValue) {
+                    reloadGrid("#grid", false);
+                },
+            });
+
+            var _itemGroup = [
+                {
+                    id: 3,
+                    name: "FG",
+                },
+                {
+                    id: 13,
+                    name: "SM",
+                },
+            ];
+
+            $("#grid .--item-group").editable({
+                type: "select",
+                name: "ITEM_GROUP",
+                mode: "inline",
+                url: "/bomapi/updateemail",
+                source: pack_dd(_itemGroup, "id", "name"),
+                success: function (response, newValue) {
+                    reloadGrid("#grid", false);
+                },
+            });
+
+            call_ajax("post", "/bomapi/getapproveemail").done(function(data) {
+                $("#grid .--notify").editable({
+                type: "select",
+                name: "NOTIFY_TO",
+                mode: "inline",
+                url: "/bomapi/updateemail",
+                source: pack_dd(data, "id", "email", true, 0, "id"),
+                success: function(response, newValue) {
+                    reloadGrid("#grid", false);
+                },
+                });
+            });
+
+            var _active = [
+                {
+                    id: 0,
+                    name: "ปิดการใช้งาน",
+                },
+                {
+                    id: 1,
+                    name: "เปิดการใช้งาน",
+                },
+            ];
+
+                $("#grid .--active").editable({
+                type: "select",
+                name: "ACTIVE",
+                mode: "inline",
+                url: "/bomapi/updateemail",
+                source: pack_dd(_active, "id", "name"),
+                    success: function (response, newValue) {
+                        reloadGrid("#grid", false);
+                    },
+                });
+        };
+
+        loadGrid({
+            el: "#grid",
+            dom: "Bfrtip",
+            processing: true,
+            serverSide: false,
+            deferRender: true,
+            ajax: {
+                url: "/BomApi/GetListEmailSetup",
+                method: "post",
+            },
+            order: [],
+            orderCellsTop: true,
+            destroy: true,
+            fnDrawCallback: grid_callback,
+            select: {
+                style: "single",
+            },
+            buttons: [
+                {
+                    text: "เพิ่มข้อมูล",
+                    action: function (e, dt, node, config) {
+                        $("#modalCreate").modal({ backdrop: "static" });
+
+                        call_ajax("post", "/bomapi/GetEmailGroup").done(function (data) {
+                            $("select[name=emailGroup]").html("");
+                            $.each(data, function (i, v) {
+                                $("select[name=emailGroup]").append("<option value='"+v.ID+"'>"+v.NAME+"</option>");
+                            });
+                        });
+
+                        call_ajax("post", "/bom/getitemgroup").done(function (data) {
+                            $("select[name=itemGroup]").html("");
+                            $.each(data, function (i, v) {
+                                $("select[name=itemGroup]").append("<option value='" + v.ID + "'>" + v.NAME + "</option>");
+                            });
+                        });
+
+                        call_ajax("post", "/bom/getnotifytoemail").done(function (data) {
+                            console.log(data);
+                            $("select[name=notifyTo]").html("<option value='0'>เลือก</option>");
+                            $.each(data, function (i, v) {
+                                $("select[name=notifyTo]").append("<option value='" + v.ID + "'> ("+v.COMPANY+","+v.ITEM_GROUP+") " + v.EMAIL + "</option>");
+                            });
+                        });
+                    },
+                },
+            ],
+            columns: [
+                { data: "ID" },
+                { data: "EMAIL" },
+                { data: "COMPANY" },
+                { data: "EMAIL_ORDER" },
+                { data: "APPROVE_LEVEL" },
+                { data: "CAN_APPROVE" },
+                { data: "NOTIFY_TO" },
+                { data: "IS_FINAL" },
+                { data: "ITEM_GROUP" },
+                { data: "DIMENSION"},
+                { data: "ACTIVE" },
+            ],
+            columnDefs: [
+                {
+                    render: function (data, type, row) {
+                        return '<div class="--email" data-pk="' + row.ID + '">' + data + '</div>';
+                    }, targets: 1
+                },
+                {
+                    render: function (data, type, row) {
+                        return '<div class="--company" data-pk="' + row.ID + '">' + data + '</div>';
+                    }, targets: 2
+                },
+                {
+                    render: function (data, type, row) {
+                        return '<div class="--order" data-pk="' + row.ID + '">' + data + '</div>';
+                    }, targets: 3
+                },
+                {
+                    render: function (data, type, row) {
+                        var c = "";
+
+                        if (+data === 1) {
+                            c = "ใช่";
+                        } else {
+                            c= "ไม่ใช่";
+                        }
+
+                        return '<div class="--can-approve" data-pk="' + row.ID + '">' + c + '</div>';
+                    }, targets: 5
+                },
+                {
+                    render: function (data, type, row) {
+                        return '<div class="--approve-level" data-pk="' + row.ID + '">' + data + '</div>';
+                    }, targets: 4
+                },
+                {
+                    render: function (data, type, row) {
+                        var c = data;
+
+                        if (data === null) { c = "" };
+
+                        return '<div class="--notify" data-pk="' + row.ID + '">' + c + '</div>';
+                    }, targets: 6
+                },
+                {
+                    render: function (data, type, row) {
+                        var c = "";
+
+                        if (+data === 1) {
+                            c = "ใช่";
+                        } else {
+                            c= "ไม่ใช่";
+                        }
+                        
+                        return '<div class="--is-final" data-pk="' + row.ID + '">' + c + '</div>';
+                    }, targets: 7
+                },
+                {
+                    render: function (data, type, row) {
+                        return '<div class="--item-group" data-pk="' + row.ID + '">' + data + '</div>';
+                    }, targets: 8
+                },
+                {
+                    render: function (data, type, row) {
+                        var c = data;
+
+                        if (data === null) { c = "" };
+
+                        return '<div class="--dimension" data-pk="' + row.ID + '">' + c + '</div>';
+                    }, targets: 9
+                },
+                {
+                    render: function (data, type, row) {
+                        var c = '';
+
+                        if (data === 1) { c = "<span style='color: white; background: green;'>เปิดการใช้งาน</span>" };
+                        if (data === 0) { c = "<span style='color: white; background: red;'>ปิดการใช้งาน</span>" };
+
+
+                        return '<div class="--active" data-pk="' + row.ID + '">' + c + '</div>';
+                    }, targets:10
+                }
+            ]
+        });
+
+        $("#formCreate").submit(function (e) {
+            e.preventDefault();
+
+            call_ajax("post", "/user/create", {
+                email: $("input[name=email]").val(),
+                company: $("select[name=company]").val(),
+                order: $("input[name=order]").val(),
+                emailGroup: $("select[name=emailGroup]").val(),
+                canApprove: $("select[name=canApprove]").val(),
+                notifyTo: $("select[name=notifyTo]").val(),
+                finalApprove: $("select[name=finalApprove]").val(),
+                itemGroup: $("select[name=itemGroup]").val(),
+            }).done(function (data) {
+                $("#formCreate").trigger("reset");
+                alert(data.message);
+                reloadGrid("#grid", true);
+                $("#modalCreate").modal("hide");
+            });
+        });
+    });
+</script>
+}
